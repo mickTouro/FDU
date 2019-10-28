@@ -3,71 +3,63 @@ package com.ickovitz.operating_systems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 public class ShortestProcessNextProcessor extends SchedulingProcessor {
 
-	public ShortestProcessNextProcessor(
-			HashMap<String, List<Integer>> processesInfo) {
+	public ShortestProcessNextProcessor(HashMap<String, ProcessInfo> processesInfo) {
 		super(processesInfo);
-
 		createSchedule();
 		printTimingOrder();
-
 		System.out.println("Norm Turn: " + calculateAvgNormalizedTurnaroundTime());
 	}
 
 	@Override
 	public void createSchedule() {
-		HashMap<String, List<Integer>> tempList = new HashMap<String, List<Integer>>(
-				processesInfo);
+		// create a map of processes ordered by arrival time
+		TreeMap<Integer, List<String>> orderedProcesses = new TreeMap<>();
+		for (Entry<String, ProcessInfo> proc : processesInfo.entrySet()) {
+			orderedProcesses.putIfAbsent(proc.getValue().arrival, new ArrayList<String>());
+			orderedProcesses.get(proc.getValue().arrival).add(proc.getKey());
+		}
+		int currentTime = 0;
 
-		int time = 0;
-
-		// as long as there are still processes waiting
-		while (!tempList.isEmpty()) {
-			ArrayList<Entry<String, List<Integer>>> currentArrivals = new ArrayList<Entry<String, List<Integer>>>();
-
-			// loop through all remaining processes
-			for (Entry<String, List<Integer>> e : tempList.entrySet()) {
-				if (e.getValue().get(1) <= time) {
-					// add to ready process list
-					currentArrivals.add(e);
-				}
-			}
-			
-
-			Entry<String, List<Integer>> shortestReadyProcess = null;
-			
-			// if no processes are ready
-			if(currentArrivals.size() < 1){
-				timingOrder.add("WAIT");
-				time++;
-				continue;
-			}
-			else{
-				for(Entry<String, List<Integer>> e : currentArrivals){
-					if(shortestReadyProcess == null){
-						shortestReadyProcess = e;
-					}
-					else if(e.getValue().get(0) < shortestReadyProcess.getValue().get(0)){
-						shortestReadyProcess = e;
-					}
-				}
-			}
-
-			// add the shortest process to the schedule
-			// once for every unit of time
-			for (int i = 0; i < shortestReadyProcess.getValue().get(0); i++) {
-				timingOrder.add(shortestReadyProcess.getKey());
-				time++;
-			}
-			// remove process that was scheduled
-			tempList.remove(shortestReadyProcess.getKey());
+		while (!orderedProcesses.isEmpty()) {
+		ArrayList<String> currentArrivals = new ArrayList<String>();
+		// find the currently arriving process
+		while (orderedProcesses.size() > 0 && orderedProcesses.firstKey() <= currentTime) {
+			Entry<Integer, List<String>> entry = orderedProcesses.firstEntry();
+			currentArrivals.addAll(entry.getValue());
+			orderedProcesses.remove(orderedProcesses.firstKey());
 		}
 
+			// if no processes are ready
+			if (currentArrivals.size() < 1) {
+				timingOrder.add("WAIT");
+				currentTime++;
+			} else {
+
+				while (!currentArrivals.isEmpty()) {
+					String shortestReadyProcess = currentArrivals.get(0);
+					for (String s : currentArrivals) {
+						if (processesInfo.get(s).length < processesInfo.get(shortestReadyProcess).length) {
+							shortestReadyProcess = s;
+						}
+					}
+					currentArrivals.remove(shortestReadyProcess);
+
+					// add the shortest process to the schedule
+					// once for every unit of time
+					for (int i = 0; i < processesInfo.get(shortestReadyProcess).length; i++) {
+						timingOrder.add(shortestReadyProcess);
+						currentTime++;
+					}
+				}
+			}
+		}
 	}
-	
+
 	private void printTimingOrder() {
 		for (String s : timingOrder) {
 			System.out.println(s);
@@ -78,5 +70,4 @@ public class ShortestProcessNextProcessor extends SchedulingProcessor {
 	public String getName() {
 		return "Shortest Process Next";
 	}
-
 }

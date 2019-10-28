@@ -2,7 +2,6 @@ package com.ickovitz.operating_systems;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -17,6 +16,7 @@ public class MetricsPanel extends JPanel {
 		resetTable();
 	}
 
+
 	public void resetTable() {
 		this.table = new JTable();
 		this.dtm = new DefaultTableModel();
@@ -29,7 +29,6 @@ public class MetricsPanel extends JPanel {
 	public void displayMetrics(String algorithm, Map<String, Double> map) {
 		if (table.getColumnCount() == 0) {
 			dtm.addColumn("");
-
 		}
 
 		// add metric name to column headers
@@ -48,7 +47,7 @@ public class MetricsPanel extends JPanel {
 		}
 		dtm.addRow(o);
 	}
-
+	
 	// removes all metrics
 	public void reset() {
 		this.removeAll();

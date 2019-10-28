@@ -1,17 +1,19 @@
 package com.ickovitz.operating_systems;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class FcfsProcessor extends SchedulingProcessor {
 
-	public FcfsProcessor(HashMap<String, List<Integer>> processesInfo) {
+	public FcfsProcessor(HashMap<String, ProcessInfo> processesInfo) {
 		super(processesInfo);
 		createSchedule();
 		printTimingOrder();
 		System.out.println("avg normalized turnaround time: "
+
 				+ calculateAvgNormalizedTurnaroundTime());
 	}
 
@@ -22,49 +24,38 @@ public class FcfsProcessor extends SchedulingProcessor {
 	}
 
 	public void createSchedule() {
-		HashMap<String, List<Integer>> tempList = new HashMap<String, List<Integer>>(
-				processesInfo);
-
+		// create a map of processes ordered by arrival time
+		TreeMap<Integer, List<String>> orderedProcesses = new TreeMap<>();
+		for(Entry<String, ProcessInfo> proc : processesInfo.entrySet())
+		{
+			orderedProcesses.putIfAbsent(proc.getValue().arrival, new ArrayList<String>());
+			orderedProcesses.get(proc.getValue().arrival).add(proc.getKey());
+		}
+		
 		int time = 0;
 
-		// as long as there are still processes waiting
-		while (!tempList.isEmpty()) {
-			Entry<String, List<Integer>> earliestArrival = null;
+		// for each process, by arrival time
+		for(Entry<Integer, List<String>> proc : orderedProcesses.entrySet()) {
 
-			// loop through all remaining processes
-			for (Entry<String, List<Integer>> e : tempList.entrySet()) {
-				if (e.getValue().get(1) <= time) {
-					// if no earliest, set current to earliest
-					if (earliestArrival == null) {
-						earliestArrival = e;
-					} else if (e.getValue().get(1) < earliestArrival.getValue()
-							.get(1)) {
-						// set earlier
-						earliestArrival = e;
-					}
-				}
-			}
-			
-			if(earliestArrival == null){
+			// keep incrementing time as long as the process arrival time is after curr time
+			while(proc.getKey() > time){
 				timingOrder.add("WAIT");
 				time++;
-				continue;
 			}
-
-			// add the earliest process to the schedule
-			// once for every unit of time
-			for (int i = 0; i < earliestArrival.getValue().get(0); i++) {
-				timingOrder.add(earliestArrival.getKey());
-				time++;
+			
+			// for each process
+			for (String pName:  proc.getValue()) {
+				for(int i = 0; i < processesInfo.get(pName).length; i++)
+				{
+					timingOrder.add(pName);
+					time++;
+				}
 			}
-			// remove process that was scheduled
-			tempList.remove(earliestArrival.getKey());
 		}
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "First Come First Serve";
 	}
 }

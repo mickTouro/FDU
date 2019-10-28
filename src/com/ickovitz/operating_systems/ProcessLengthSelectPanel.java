@@ -2,7 +2,6 @@ package com.ickovitz.operating_systems;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -32,7 +31,6 @@ public class ProcessLengthSelectPanel extends JPanel implements ActionListener {
 		add(longProcess);
 		add(mixedProcess);
 	}
-
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (arg0.getSource().equals(shortProcess)) {

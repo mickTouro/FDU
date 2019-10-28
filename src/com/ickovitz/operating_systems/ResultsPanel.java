@@ -3,7 +3,6 @@ package com.ickovitz.operating_systems;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -12,7 +11,6 @@ import javax.swing.table.TableColumn;
 
 public class ResultsPanel extends JPanel {
 	private JTable table;
-
 	DefaultTableModel dtm;
 
 	public ResultsPanel() {
@@ -23,7 +21,6 @@ public class ResultsPanel extends JPanel {
 	public void displaySchedule(String scheduleName, List<String> schedule) {
 		if (table.getColumnCount() == 0) {
 			dtm.addColumn("");
-
 		}
 
 		// add times column headers
@@ -59,6 +56,7 @@ public class ResultsPanel extends JPanel {
 
 		// no duplicates, sorted by run fist
 		List<String> sortedByRunTime = createSortedByRunTime(schedule);
+
 		// add rows with data
 		for (int i = 0; i < sortedByRunTime.size(); i++) {
 			Object[] o = new Object[schedule.size() + 1];
@@ -68,12 +66,17 @@ public class ResultsPanel extends JPanel {
 				o[col] = schedule.get(col - 1).equals(sortedByRunTime.get(i)) ? "."
 						: null;
 			}
+
 			dtm.addRow(o);
 		}
 	}
 
+
+
 	public List<String> createSortedByRunTime(List<String> schedule) {
+
 		List<String> sortedByRunTime = new ArrayList<String>();
+
 		for (String p : schedule) {
 			if (!sortedByRunTime.contains(p)) {
 				sortedByRunTime.add(p);
@@ -83,6 +86,7 @@ public class ResultsPanel extends JPanel {
 	}
 
 	public void resetTable() {
+		reset();
 		this.table = new JTable();
 		this.dtm = new DefaultTableModel();
 		table.setVisible(true);

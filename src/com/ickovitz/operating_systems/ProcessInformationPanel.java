@@ -1,5 +1,4 @@
 package com.ickovitz.operating_systems;
-
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -21,14 +19,13 @@ public class ProcessInformationPanel extends JPanel implements ActionListener {
 	JButton newButton;
 
 	public ProcessInformationPanel() {
-
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.processList = new ArrayList<IndividualProcessPanel>();
 		for (int i = 0; i < 5; i++) {
 			processList.add(new IndividualProcessPanel(i));
 		}
-		nextProc = 5;
 
+		nextProc = 5;
 		newButton = new JButton("Add New Process");
 		newButton.addActionListener(this);
 
@@ -36,8 +33,13 @@ public class ProcessInformationPanel extends JPanel implements ActionListener {
 			add(p);
 		}
 
+
+
 		add(newButton);
+
 		fillWithDefaults();
+
+
 
 	}
 
@@ -53,19 +55,20 @@ public class ProcessInformationPanel extends JPanel implements ActionListener {
 			getParent().validate();
 			nextProc++;
 		}
-
 	}
 
-	public HashMap<String, List<Integer>> getProcessData() {
-		HashMap processMap = new HashMap<String, List<Integer>>();
+	public HashMap<String, ProcessInfo> getProcessData() {
+		HashMap processMap = new HashMap<String, ProcessInfo>();
 		for (IndividualProcessPanel p : processList) {
 			List<Integer> times = new ArrayList();
-			times.add(Integer.parseInt(p.getServiceTimeInput().getText()));
-			times.add(Integer.parseInt(p.getArrivalTimeInput().getText()));
-			processMap.put(p.getProcessName().getText(), times);
+			int length = (Integer.parseInt(p.getServiceTimeInput().getText()));
+			int arrival = (Integer.parseInt(p.getArrivalTimeInput().getText()));
+			processMap.put(p.getProcessName().getText(), new ProcessInfo(length, arrival));
 		}
 		return processMap;
 	}
+
+
 
 	public void fillWithDefaults() {
 		int i = 0;
@@ -79,9 +82,11 @@ public class ProcessInformationPanel extends JPanel implements ActionListener {
 			} else if (i == 2) {
 				p.getServiceTimeInput().setText("4");
 				p.getArrivalTimeInput().setText("4");
+
 			} else if (i == 3) {
 				p.getServiceTimeInput().setText("5");
 				p.getArrivalTimeInput().setText("6");
+
 			} else if (i == 4) {
 				p.getServiceTimeInput().setText("2");
 				p.getArrivalTimeInput().setText("8");
@@ -94,14 +99,14 @@ public class ProcessInformationPanel extends JPanel implements ActionListener {
 		Random rand = new Random();
 
 		for (int i = 0; i < processList.size(); i++) {
-
 			processList.get(i).getServiceTimeInput()
 					.setText("" + (rand.nextInt(10) + 1 + offset));
 			processList.get(i).getArrivalTimeInput()
 					.setText("" + rand.nextInt(offset == 0 ? 10 : offset));
-
 		}
 	}
+
+
 
 	public void fillWithMixedProcesses() {
 		Random rand = new Random();
@@ -111,7 +116,6 @@ public class ProcessInformationPanel extends JPanel implements ActionListener {
 					.setText("" + (rand.nextInt(100) + 1));
 			processList.get(i).getArrivalTimeInput()
 					.setText("" + rand.nextInt(40));
-
 		}
 	}
 }
